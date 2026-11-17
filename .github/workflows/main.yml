@@ -1,0 +1,35 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Unpack and Build APK with Gradle 8.5
+        run: |
+          python3 -c "import os, zipfile; [zipfile.ZipFile(f).extractall('.') for f in os.listdir('.') if os.path.isfile(f) and zipfile.is_zipfile(f)]"
+          if [ -d "FitTrainerLive-Android-GitHub" ]; then cp -r FitTrainerLive-Android-GitHub/* . ; fi
+          curl -fL https://github.com/gradle/gradle-distributions/releases/download/v8.5.0/gradle-8.5-bin.zip -o /tmp/gradle85.zip
+          unzip -q /tmp/gradle85.zip -d /tmp
+          /tmp/gradle-8.5/bin/gradle assembleDebug --no-daemon
+
+      - name: Upload Compiled APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FitTrainerLive-debug-apk
+          path: "**/app-debug.apk"
+          overwrite: true
+          
