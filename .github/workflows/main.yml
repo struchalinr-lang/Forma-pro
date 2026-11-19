@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Forma Pro Native Kotlin APK
 
 on:
   push:
@@ -18,18 +18,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Unpack and Build APK with Gradle 8.5
+      - name: Unpack and Build Release APK with Gradle 8.5
         run: |
           python3 -c "import os, zipfile; [zipfile.ZipFile(f).extractall('.') for f in os.listdir('.') if os.path.isfile(f) and zipfile.is_zipfile(f)]"
-          if [ -d "FitTrainerLive-Android-GitHub" ]; then cp -r FitTrainerLive-Android-GitHub/* . ; fi
+          if [ -d "FormaPro-Kotlin-Android-GitHub" ]; then cp -r FormaPro-Kotlin-Android-GitHub/* . ; fi
           curl -fL https://github.com/gradle/gradle-distributions/releases/download/v8.5.0/gradle-8.5-bin.zip -o /tmp/gradle85.zip
           unzip -q /tmp/gradle85.zip -d /tmp
-          /tmp/gradle-8.5/bin/gradle assembleDebug --no-daemon
+          /tmp/gradle-8.5/bin/gradle assembleRelease --no-daemon
 
-      - name: Upload Compiled APK Artifact
+      - name: Upload Compiled Release APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FitTrainerLive-debug-apk
-          path: "**/app-debug.apk"
+          name: FormaPro-Kotlin-release-apk
+          path: "**/app-release.apk"
           overwrite: true
-          
